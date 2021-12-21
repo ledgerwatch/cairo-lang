@@ -34,6 +34,7 @@ setuptools.setup(
     scripts=[
         "starkware/cairo/lang/scripts/cairo-compile",
         "starkware/cairo/lang/scripts/cairo-format",
+        "starkware/cairo/lang/scripts/cairo-grpc",
         "starkware/cairo/lang/scripts/cairo-hash-program",
         "starkware/cairo/lang/scripts/cairo-reconstruct-traceback",
         "starkware/cairo/lang/scripts/cairo-run",

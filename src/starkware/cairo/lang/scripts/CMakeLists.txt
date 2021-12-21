@@ -3,6 +3,7 @@ python_lib(cairo_script_lib
     FILES
     cairo-compile
     cairo-format
+    cairo-grpc
     cairo-hash-program
     cairo-reconstruct-traceback
     cairo-run
@@ -10,6 +11,7 @@ python_lib(cairo_script_lib
 
     LIBS
     cairo_compile_lib
+    cairo_grpc_lib
     cairo_hash_program_lib
     cairo_run_lib
     cairo_vm_utils_lib

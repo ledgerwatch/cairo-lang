@@ -4,6 +4,7 @@ ecdsa
 eth-hash[pycryptodome]==0.2.0
 fastecdsa
 frozendict==1.2
+grpcio
 lark-parser
 marshmallow-dataclass>=7.1.0
 marshmallow-enum
