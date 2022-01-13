@@ -8,23 +8,20 @@ from starkware.starkware_utils.error_handling import StarkErrorCode
 
 class InvokeParams:
     inputs: List[str] = []
-    signature: List[str] = []
-    abi: str = ""
     address: str = ""
     function: str = ""
     block_hash: str = None
     block_number: int = None
-    type: str = "call"
     gateway_url: str = None
     feeder_gateway_url: str = None
-    command: str = "invoke"
-    network: str = None
+    network: str = "alpha"
     testing = False
 
     def __init__(self, data: {}):
         for key in data:
-            if key == "inputs" or key == "signature":
-                self.__setattr__(key, data[key].split(","))
+            if key == "inputs":
+                if (len(data[key]) != 0):
+                    self.__setattr__(key, data[key].split(","))
             elif hasattr(self, key):
                 self.__setattr__(key, data[key])
 

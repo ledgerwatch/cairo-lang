@@ -24,7 +24,7 @@ fastecdsa==2.2.3
 frozendict==1.2
 frozenlist==1.2.0
 hexbytes==0.2.2
-grpcio=1.41.1
+grpcio==1.41.1
 idna==3.3
 importlib-metadata==4.8.2
 iniconfig==1.1.1
