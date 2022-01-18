@@ -10,6 +10,7 @@ from starkware.starknet.compiler.compile import get_selector_from_name
 from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.cli.starknet_cli import parse_inputs, handle_network_param
 
+
 def call_cairo_run(params: {}, code) -> []:
     proof_mode = False
     steps_input = None
@@ -82,7 +83,7 @@ async def call_starknet_run(params_dict: {}):
     )
 
     result = []
-
+    # TODO: change feeder to executing code
     feeder_client = get_feeder_gateway_client_wrapper(params)
     gateway_response = await feeder_client.call_contract(
         invoke_tx=tx, block_hash=params.block_hash, block_number=params.block_number
