@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from starkware.cairo.grpc import cairo_pb2 as starknet_dot_cairo__pb2
+import cairo_pb2 as cairo__pb2
 
 
 class CAIROVMStub(object):
@@ -16,8 +16,13 @@ class CAIROVMStub(object):
         """
         self.Call = channel.unary_unary(
                 '/starknet.CAIROVM/Call',
-                request_serializer=starknet_dot_cairo__pb2.CallRequest.SerializeToString,
-                response_deserializer=starknet_dot_cairo__pb2.CallResponse.FromString,
+                request_serializer=cairo__pb2.CallRequest.SerializeToString,
+                response_deserializer=cairo__pb2.CallResponse.FromString,
+                )
+        self.Address = channel.unary_unary(
+                '/starknet.CAIROVM/Address',
+                request_serializer=cairo__pb2.AddressRequest.SerializeToString,
+                response_deserializer=cairo__pb2.AddressResponse.FromString,
                 )
 
 
@@ -30,13 +35,24 @@ class CAIROVMServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def Address(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_CAIROVMServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Call': grpc.unary_unary_rpc_method_handler(
                     servicer.Call,
-                    request_deserializer=starknet_dot_cairo__pb2.CallRequest.FromString,
-                    response_serializer=starknet_dot_cairo__pb2.CallResponse.SerializeToString,
+                    request_deserializer=cairo__pb2.CallRequest.FromString,
+                    response_serializer=cairo__pb2.CallResponse.SerializeToString,
+            ),
+            'Address': grpc.unary_unary_rpc_method_handler(
+                    servicer.Address,
+                    request_deserializer=cairo__pb2.AddressRequest.FromString,
+                    response_serializer=cairo__pb2.AddressResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -60,7 +76,24 @@ class CAIROVM(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/starknet.CAIROVM/Call',
-            starknet_dot_cairo__pb2.CallRequest.SerializeToString,
-            starknet_dot_cairo__pb2.CallResponse.FromString,
+            cairo__pb2.CallRequest.SerializeToString,
+            cairo__pb2.CallResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Address(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/starknet.CAIROVM/Address',
+            cairo__pb2.AddressRequest.SerializeToString,
+            cairo__pb2.AddressResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

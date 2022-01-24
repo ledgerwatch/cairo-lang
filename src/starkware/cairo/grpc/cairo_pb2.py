@@ -3,7 +3,6 @@
 # source: cairo.proto
 """Generated protocol buffer code."""
 from google.protobuf import descriptor as _descriptor
-from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
@@ -15,15 +14,230 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import any_pb2 as google_dot_protobuf_dot_any__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x63\x61iro.proto\x12\x08starknet\x1a\x19google/protobuf/any.proto\"\xa3\x01\n\x0b\x43\x61llRequest\x12\x0e\n\x06method\x18\x01 \x01(\t\x12\x31\n\x06params\x18\x02 \x03(\x0b\x32!.starknet.CallRequest.ParamsEntry\x12\x0c\n\x04\x63ode\x18\x03 \x01(\x0c\x1a\x43\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\"4\n\x0c\x43\x61llResponse\x12$\n\x06result\x18\x01 \x03(\x0b\x32\x14.google.protobuf.Any\"\x8a\x01\n\x0e\x41\x64\x64ressRequest\x12\x0c\n\x04salt\x18\x01 \x01(\t\x12\x34\n\x16\x63onstructor_definition\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\x12\x1c\n\x14\x63onstructor_calldata\x18\x03 \x03(\r\x12\x16\n\x0e\x63\x61ller_address\x18\x05 \x01(\t\"\"\n\x0f\x41\x64\x64ressResponse\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t2\x84\x01\n\x07\x43\x41IROVM\x12\x37\n\x04\x43\x61ll\x12\x15.starknet.CallRequest\x1a\x16.starknet.CallResponse\"\x00\x12@\n\x07\x41\x64\x64ress\x12\x18.starknet.AddressRequest\x1a\x19.starknet.AddressResponse\"\x00\x42\x15Z\x13./starknet;starknetb\x06proto3')
+DESCRIPTOR = _descriptor.FileDescriptor(
+  name='cairo.proto',
+  package='starknet',
+  syntax='proto3',
+  serialized_options=b'Z\023./starknet;starknet',
+  create_key=_descriptor._internal_create_key,
+  serialized_pb=b'\n\x0b\x63\x61iro.proto\x12\x08starknet\x1a\x19google/protobuf/any.proto\"\xa3\x01\n\x0b\x43\x61llRequest\x12\x0e\n\x06method\x18\x01 \x01(\t\x12\x31\n\x06params\x18\x02 \x03(\x0b\x32!.starknet.CallRequest.ParamsEntry\x12\x0c\n\x04\x63ode\x18\x03 \x01(\x0c\x1a\x43\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\"4\n\x0c\x43\x61llResponse\x12$\n\x06result\x18\x01 \x03(\x0b\x32\x14.google.protobuf.Any\"\x8a\x01\n\x0e\x41\x64\x64ressRequest\x12\x0c\n\x04salt\x18\x01 \x01(\t\x12\x34\n\x16\x63onstructor_definition\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\x12\x1c\n\x14\x63onstructor_calldata\x18\x03 \x03(\r\x12\x16\n\x0e\x63\x61ller_address\x18\x05 \x01(\t\"\"\n\x0f\x41\x64\x64ressResponse\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t2\x84\x01\n\x07\x43\x41IROVM\x12\x37\n\x04\x43\x61ll\x12\x15.starknet.CallRequest\x1a\x16.starknet.CallResponse\"\x00\x12@\n\x07\x41\x64\x64ress\x12\x18.starknet.AddressRequest\x1a\x19.starknet.AddressResponse\"\x00\x42\x15Z\x13./starknet;starknetb\x06proto3'
+  ,
+  dependencies=[google_dot_protobuf_dot_any__pb2.DESCRIPTOR,])
 
 
 
-_CALLREQUEST = DESCRIPTOR.message_types_by_name['CallRequest']
-_CALLREQUEST_PARAMSENTRY = _CALLREQUEST.nested_types_by_name['ParamsEntry']
-_CALLRESPONSE = DESCRIPTOR.message_types_by_name['CallResponse']
-_ADDRESSREQUEST = DESCRIPTOR.message_types_by_name['AddressRequest']
-_ADDRESSRESPONSE = DESCRIPTOR.message_types_by_name['AddressResponse']
+
+_CALLREQUEST_PARAMSENTRY = _descriptor.Descriptor(
+  name='ParamsEntry',
+  full_name='starknet.CallRequest.ParamsEntry',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='starknet.CallRequest.ParamsEntry.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='starknet.CallRequest.ParamsEntry.value', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=b'8\001',
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=149,
+  serialized_end=216,
+)
+
+_CALLREQUEST = _descriptor.Descriptor(
+  name='CallRequest',
+  full_name='starknet.CallRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='method', full_name='starknet.CallRequest.method', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='params', full_name='starknet.CallRequest.params', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='code', full_name='starknet.CallRequest.code', index=2,
+      number=3, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[_CALLREQUEST_PARAMSENTRY, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=53,
+  serialized_end=216,
+)
+
+
+_CALLRESPONSE = _descriptor.Descriptor(
+  name='CallResponse',
+  full_name='starknet.CallResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='result', full_name='starknet.CallResponse.result', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=218,
+  serialized_end=270,
+)
+
+
+_ADDRESSREQUEST = _descriptor.Descriptor(
+  name='AddressRequest',
+  full_name='starknet.AddressRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='salt', full_name='starknet.AddressRequest.salt', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='constructor_definition', full_name='starknet.AddressRequest.constructor_definition', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='constructor_calldata', full_name='starknet.AddressRequest.constructor_calldata', index=2,
+      number=3, type=13, cpp_type=3, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='caller_address', full_name='starknet.AddressRequest.caller_address', index=3,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=273,
+  serialized_end=411,
+)
+
+
+_ADDRESSRESPONSE = _descriptor.Descriptor(
+  name='AddressResponse',
+  full_name='starknet.AddressResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='address', full_name='starknet.AddressResponse.address', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=413,
+  serialized_end=447,
+)
+
+_CALLREQUEST_PARAMSENTRY.fields_by_name['value'].message_type = google_dot_protobuf_dot_any__pb2._ANY
+_CALLREQUEST_PARAMSENTRY.containing_type = _CALLREQUEST
+_CALLREQUEST.fields_by_name['params'].message_type = _CALLREQUEST_PARAMSENTRY
+_CALLRESPONSE.fields_by_name['result'].message_type = google_dot_protobuf_dot_any__pb2._ANY
+_ADDRESSREQUEST.fields_by_name['constructor_definition'].message_type = google_dot_protobuf_dot_any__pb2._ANY
+DESCRIPTOR.message_types_by_name['CallRequest'] = _CALLREQUEST
+DESCRIPTOR.message_types_by_name['CallResponse'] = _CALLRESPONSE
+DESCRIPTOR.message_types_by_name['AddressRequest'] = _ADDRESSREQUEST
+DESCRIPTOR.message_types_by_name['AddressResponse'] = _ADDRESSRESPONSE
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
 CallRequest = _reflection.GeneratedProtocolMessageType('CallRequest', (_message.Message,), {
 
   'ParamsEntry' : _reflection.GeneratedProtocolMessageType('ParamsEntry', (_message.Message,), {
@@ -60,23 +274,43 @@ AddressResponse = _reflection.GeneratedProtocolMessageType('AddressResponse', (_
   })
 _sym_db.RegisterMessage(AddressResponse)
 
-_CAIROVM = DESCRIPTOR.services_by_name['CAIROVM']
-if _descriptor._USE_C_DESCRIPTORS == False:
 
-  DESCRIPTOR._options = None
-  DESCRIPTOR._serialized_options = b'Z\023./starknet;starknet'
-  _CALLREQUEST_PARAMSENTRY._options = None
-  _CALLREQUEST_PARAMSENTRY._serialized_options = b'8\001'
-  _CALLREQUEST._serialized_start=53
-  _CALLREQUEST._serialized_end=216
-  _CALLREQUEST_PARAMSENTRY._serialized_start=149
-  _CALLREQUEST_PARAMSENTRY._serialized_end=216
-  _CALLRESPONSE._serialized_start=218
-  _CALLRESPONSE._serialized_end=270
-  _ADDRESSREQUEST._serialized_start=273
-  _ADDRESSREQUEST._serialized_end=411
-  _ADDRESSRESPONSE._serialized_start=413
-  _ADDRESSRESPONSE._serialized_end=447
-  _CAIROVM._serialized_start=450
-  _CAIROVM._serialized_end=582
+DESCRIPTOR._options = None
+_CALLREQUEST_PARAMSENTRY._options = None
+
+_CAIROVM = _descriptor.ServiceDescriptor(
+  name='CAIROVM',
+  full_name='starknet.CAIROVM',
+  file=DESCRIPTOR,
+  index=0,
+  serialized_options=None,
+  create_key=_descriptor._internal_create_key,
+  serialized_start=450,
+  serialized_end=582,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='Call',
+    full_name='starknet.CAIROVM.Call',
+    index=0,
+    containing_service=None,
+    input_type=_CALLREQUEST,
+    output_type=_CALLRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Address',
+    full_name='starknet.CAIROVM.Address',
+    index=1,
+    containing_service=None,
+    input_type=_ADDRESSREQUEST,
+    output_type=_ADDRESSRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_CAIROVM)
+
+DESCRIPTOR.services_by_name['CAIROVM'] = _CAIROVM
+
 # @@protoc_insertion_point(module_scope)
