@@ -11,6 +11,7 @@ from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.cli.starknet_cli import validate_arguments, parse_inputs, get_gateway_client, get_feeder_gateway_client, handle_network_param
 from starkware.starkware_utils.error_handling import StarkErrorCode
 
+
 def call_cairo_run(params: {}, code) -> []:
     proof_mode = False
     steps_input = None

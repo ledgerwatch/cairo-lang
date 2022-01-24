@@ -11,8 +11,8 @@ from starkware.cairo.grpc.helper import encode_grpc_any_array, decode_grpc_any_m
 from starkware.cairo.grpc import cairo_pb2, cairo_pb2_grpc
 from starkware.cairo.grpc.methods import call_cairo_run, call_starknet_run
 
-class CairoServicer(cairo_pb2_grpc.CAIROVMServicer):
 
+class CairoServicer(cairo_pb2_grpc.CAIROVMServicer):
     def Call(self, request, context):
         params = decode_grpc_any_map(request.params)
         method = request.method
@@ -44,6 +44,7 @@ def start_server(port: int, host: str):
 
     server.start()
     server.wait_for_termination()
+
 
 def main():
     parser = argparse.ArgumentParser(description="Run Cairo grpc server.")
