@@ -17,6 +17,7 @@ class InvokeParams:
     gateway_url: str = None
     feeder_gateway_url: str = None
     network: str = "alpha-goerli"
+    network_id: str = None
     command: str = "invoke"
     testing = False
 

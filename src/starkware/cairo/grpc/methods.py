@@ -8,7 +8,8 @@ from starkware.cairo.lang.vm.utils import RunResources
 
 from starkware.starknet.compiler.compile import get_selector_from_name
 from starkware.starknet.services.api.gateway.transaction import InvokeFunction
-from starkware.starknet.cli.starknet_cli import parse_inputs, handle_network_param
+from starkware.starknet.cli.starknet_cli import handle_network_param
+from starkware.starknet.utils.api_utils import cast_to_felts
 
 
 def call_cairo_run(params: {}, code) -> []:
@@ -37,7 +38,7 @@ def call_cairo_run(params: {}, code) -> []:
     additional_steps = 1 if proof_mode else 0
 
     max_steps = steps_input - additional_steps if steps_input is not None else None
-    runner.run_until_pc(entrypoint, run_resources=RunResources(steps=max_steps))
+    runner.run_until_pc(entrypoint, run_resources=RunResources(n_steps=max_steps))
     if proof_mode:
         # Run one more step to make sure the last pc that was executed (rather than the pc
         # after it) is __end__.
@@ -64,7 +65,7 @@ def call_cairo_run(params: {}, code) -> []:
 
 async def call_starknet_run(params_dict: {}):
     params = InvokeParams(params_dict)
-    inputs = parse_inputs(params.inputs)
+    inputs = cast_to_felts(params.inputs)
 
     assert params.address.startswith("0x"), f"The address must start with '0x'. Got: {params.address}."
     try:
