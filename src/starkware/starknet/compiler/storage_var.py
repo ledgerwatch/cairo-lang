@@ -1,10 +1,9 @@
 import dataclasses
-from typing import Optional, Tuple
+from typing import List
 
-from starkware.cairo.lang.compiler.ast.cairo_types import CairoType, TypeFelt, TypePointer
+from starkware.cairo.lang.compiler.ast.cairo_types import CairoType, TypePointer
 from starkware.cairo.lang.compiler.ast.code_elements import CodeElementFunction
 from starkware.cairo.lang.compiler.ast.formatting_utils import get_max_line_length
-from starkware.cairo.lang.compiler.error_handling import Location
 from starkware.cairo.lang.compiler.parser import parse
 from starkware.cairo.lang.compiler.preprocessor.identifier_aware_visitor import (
     IdentifierAwareVisitor,
@@ -12,11 +11,29 @@ from starkware.cairo.lang.compiler.preprocessor.identifier_aware_visitor import 
 from starkware.cairo.lang.compiler.preprocessor.preprocessor_error import PreprocessorError
 from starkware.cairo.lang.compiler.preprocessor.preprocessor_utils import verify_empty_code_block
 from starkware.cairo.lang.compiler.type_utils import check_felts_only_type
-from starkware.starknet.definitions.constants import STARKNET_LANG_DIRECTIVE
+from starkware.python.utils import safe_zip
+from starkware.starknet.compiler.validation_utils import (
+    has_decorator,
+    verify_decorators,
+    verify_no_implicit_arguments,
+    verify_starknet_lang,
+)
 from starkware.starknet.public.abi import MAX_STORAGE_ITEM_SIZE, get_storage_var_address
 
 STORAGE_VAR_DECORATOR = "storage_var"
 STORAGE_VAR_ATTR = "storage_var"
+
+# The following names cannot be used as argument names for storage variables because they collide
+# with existing functions.
+FORBIDDEN_ARGUMENT_NAMES = {
+    "addr",
+    "normalize_address",
+    "storage_read",
+    "storage_write",
+    "hash2",
+    "read",
+    "write",
+}
 
 
 def get_return_type(elm: CodeElementFunction) -> CairoType:
@@ -119,28 +136,32 @@ def process_storage_var(visitor: IdentifierAwareVisitor, elm: CodeElementFunctio
         error_message="Storage variables must have an empty body.",
         default_location=elm.identifier.location,
     )
+    verify_no_implicit_arguments(elm=elm, name_in_error_message="Storage variables")
+    verify_decorators(
+        elm=elm,
+        allowed_decorators=[STORAGE_VAR_DECORATOR],
+        name_in_error_message="a storage variable",
+    )
 
-    if elm.implicit_arguments is not None:
-        raise PreprocessorError(
-            "Storage variables must have no implicit arguments.",
-            location=elm.implicit_arguments.location,
-        )
-
-    for decorator in elm.decorators:
-        if decorator.name != STORAGE_VAR_DECORATOR:
-            raise PreprocessorError(
-                "Storage variables must have no decorators in addition to "
-                f"@{STORAGE_VAR_DECORATOR}.",
-                location=decorator.location,
-            )
-
+    arg_sizes: List[int] = []
     for arg in elm.arguments.identifiers:
-        arg_type = arg.get_type()
-        if not isinstance(arg_type, TypeFelt):
+        if arg.identifier.name in FORBIDDEN_ARGUMENT_NAMES:
             raise PreprocessorError(
-                "Only felt arguments are supported in storage variables.",
-                location=arg_type.location,
+                f"'{arg.identifier.name}' cannot be used as a storage variable argument name.",
+                location=arg.identifier.location,
             )
+        unresolved_arg_type = arg.get_type()
+        arg_type = visitor.resolve_type(unresolved_arg_type)
+        arg_size = check_felts_only_type(
+            cairo_type=arg_type, identifier_manager=visitor.identifiers
+        )
+        if arg_size is None:
+            raise PreprocessorError(
+                "Arguments of storage variables must be a felts-only type "
+                "(cannot contain pointers).",
+                location=unresolved_arg_type.location,
+            )
+        arg_sizes.append(arg_size)
 
     unresolved_return_type = get_return_type(elm=elm)
     return_type = visitor.resolve_type(unresolved_return_type)
@@ -149,7 +170,8 @@ def process_storage_var(visitor: IdentifierAwareVisitor, elm: CodeElementFunctio
         is None
     ):
         raise PreprocessorError(
-            "The return type of storage variables must consist of felts.",
+            "The return type of storage variables must be a felts-only type "
+            "(cannot contain pointers).",
             location=elm.returns.location if elm.returns is not None else elm.identifier.location,
         )
     var_size = visitor.get_size(return_type)
@@ -164,10 +186,11 @@ def process_storage_var(visitor: IdentifierAwareVisitor, elm: CodeElementFunctio
     var_name = elm.identifier.name
     addr = storage_var_name_to_base_addr(var_name)
     addr_func_body = f"let res = {addr}\n"
-    for arg in elm.arguments.identifiers:
-        addr_func_body += (
-            f"let (res) = hash2{{hash_ptr=pedersen_ptr}}(res, {arg.identifier.name})\n"
-        )
+    for arg, arg_size in safe_zip(elm.arguments.identifiers, arg_sizes):
+        assert arg_size is not None
+        for i in range(arg_size):
+            value_str = f"cast(&{arg.identifier.name}, felt*)[{i}]"
+            addr_func_body += f"let (res) = hash2{{hash_ptr=pedersen_ptr}}(res, {value_str})\n"
     if len(elm.arguments.identifiers) > 0:
         addr_func_body += "let (res) = normalize_address(addr=res)\n"
     addr_func_body += "return (res=res)\n"
@@ -215,17 +238,6 @@ def storage_var_name_to_base_addr(var_name: str) -> int:
     return get_storage_var_address(var_name=var_name)
 
 
-def is_storage_var(elm: CodeElementFunction) -> Tuple[bool, Optional[Location]]:
-    """
-    Returns whether the given function has the storage var decorator. If it does, the location of
-    the decorator is returned.
-    """
-    for decorator in elm.decorators:
-        if decorator.name == STORAGE_VAR_DECORATOR:
-            return True, decorator.location
-    return False, None
-
-
 class StorageVarDeclVisitor(IdentifierAwareVisitor):
     """
     Replaces @storage_var decorated functions with a namespace with empty functions.
@@ -237,14 +249,15 @@ class StorageVarDeclVisitor(IdentifierAwareVisitor):
         return obj
 
     def visit_CodeElementFunction(self, elm: CodeElementFunction):
-        storage_var, storage_var_location = is_storage_var(elm)
-        if storage_var:
-            if self.file_lang != STARKNET_LANG_DIRECTIVE:
-                raise PreprocessorError(
-                    "@storage_var can only be used in source files that contain the "
-                    '"%lang starknet" directive.',
-                    location=storage_var_location,
-                )
+        is_storage_var, storage_var_location = has_decorator(
+            elm=elm, decorator_name=STORAGE_VAR_DECORATOR
+        )
+        if is_storage_var:
+            verify_starknet_lang(
+                file_lang=self.file_lang,
+                location=storage_var_location,
+                name_in_error_message=f"@{STORAGE_VAR_DECORATOR}",
+            )
             # Add dummy references and calls that will be visited by the identifier collector
             # and the dependency graph.
             # Those statements will later be replaced by the real implementation.
@@ -274,7 +287,7 @@ call storage_write
         return elm
 
 
-class StorageVarImplentationVisitor(IdentifierAwareVisitor):
+class StorageVarImplementationVisitor(IdentifierAwareVisitor):
     """
     Replaces @storage_var decorated functions (obtained from the additional attribute
     STORAGE_VAR_ATTR added by StorageVarDeclVisitor) with a namespace with read() and write()

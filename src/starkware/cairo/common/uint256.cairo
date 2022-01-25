@@ -1,4 +1,6 @@
-from starkware.cairo.common.math import assert_le, assert_nn_le, assert_not_zero
+from starkware.cairo.common.bitwise import bitwise_and, bitwise_or, bitwise_xor
+from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
+from starkware.cairo.common.math import assert_in_range, assert_le, assert_nn_le, assert_not_zero
 from starkware.cairo.common.math_cmp import is_le
 from starkware.cairo.common.pow import pow
 from starkware.cairo.common.registers import get_ap, get_fp_and_pc
@@ -85,6 +87,44 @@ func uint256_mul{range_check_ptr}(a : Uint256, b : Uint256) -> (low : Uint256, h
     return (
         low=Uint256(low=res0 + HALF_SHIFT * res1, high=res2 + HALF_SHIFT * res3),
         high=Uint256(low=res4 + HALF_SHIFT * res5, high=res6 + HALF_SHIFT * carry))
+end
+
+# Returns the floor value of the square root of a uint256 integer.
+func uint256_sqrt{range_check_ptr}(n : Uint256) -> (res : Uint256):
+    alloc_locals
+    local root : Uint256
+
+    %{
+        from starkware.python.math_utils import isqrt
+        n = (ids.n.high << 128) + ids.n.low
+        root = isqrt(n)
+        assert 0 <= root < 2 ** 128
+        ids.root.low = root
+        ids.root.high = 0
+    %}
+
+    # Verify that 0 <= root < 2**128.
+    assert root.high = 0
+    [range_check_ptr] = root.low
+    let range_check_ptr = range_check_ptr + 1
+
+    # Verify that n >= root**2.
+    let (root_squared, carry) = uint256_mul(root, root)
+    assert carry = Uint256(0, 0)
+    let (check_lower_bound) = uint256_le(root_squared, n)
+    assert check_lower_bound = 1
+
+    # Verify that n <= (root+1)**2 - 1.
+    # In the case where root = 2**128 - 1, we will have next_root_squared=0, since
+    # (root+1)**2 = 2**256. Therefore next_root_squared - 1 = 2**256 - 1, as desired.
+    let (next_root, add_carry) = uint256_add(root, Uint256(1, 0))
+    assert add_carry = 0
+    let (next_root_squared, _) = uint256_mul(next_root, next_root)
+    let (next_root_squared_minus_one) = uint256_sub(next_root_squared, Uint256(1, 0))
+    let (check_upper_bound) = uint256_le(n, next_root_squared_minus_one)
+    assert check_upper_bound = 1
+
+    return (res=root)
 end
 
 # Returns 1 if the first unsigned integer is less than the second unsigned integer.
@@ -250,32 +290,6 @@ end
 
 # Bitwise.
 
-# Computes the bitwise XOR of 2 n-bit words.
-# This is an inefficient implementation, and will be replaced with a builtin in the future.
-func felt_xor{range_check_ptr}(a, b, n) -> (res : felt):
-    alloc_locals
-    local a_lsb
-    local b_lsb
-
-    if n == 0:
-        assert a = 0
-        assert b = 0
-        return (0)
-    end
-
-    %{
-        ids.a_lsb = ids.a & 1
-        ids.b_lsb = ids.b & 1
-    %}
-    assert a_lsb * a_lsb = a_lsb
-    assert b_lsb * b_lsb = b_lsb
-
-    local res_bit = a_lsb + b_lsb - 2 * a_lsb * b_lsb
-
-    let (res) = felt_xor((a - a_lsb) / 2, (b - b_lsb) / 2, n - 1)
-    return (res=res * 2 + res_bit)
-end
-
 # Return true if both integers are equal.
 func uint256_eq{range_check_ptr}(a : Uint256, b : Uint256) -> (res):
     if a.high != b.high:
@@ -287,54 +301,28 @@ func uint256_eq{range_check_ptr}(a : Uint256, b : Uint256) -> (res):
     return (1)
 end
 
-# Computes the bitwise AND of 2 n-bit words.
-# This is an inefficient implementation, and will be replaced with a builtin in the future.
-func felt_and{range_check_ptr}(a, b, n) -> (res : felt):
-    alloc_locals
-    local a_lsb
-    local b_lsb
-
-    if n == 0:
-        assert a = 0
-        assert b = 0
-        return (res=0)
-    end
-
-    %{
-        ids.a_lsb = ids.a & 1
-        ids.b_lsb = ids.b & 1
-    %}
-    assert a_lsb * a_lsb = a_lsb
-    assert b_lsb * b_lsb = b_lsb
-
-    local res_bit = a_lsb * b_lsb
-
-    let (res) = felt_and((a - a_lsb) / 2, (b - b_lsb) / 2, n - 1)
-    return (res=res * 2 + res_bit)
-end
-
 # Computes the bitwise XOR of 2 uint256 integers.
-func uint256_xor{range_check_ptr}(a : Uint256, b : Uint256) -> (res : Uint256):
-    alloc_locals
-    let (local low) = felt_xor(a.low, b.low, 128)
-    let (high) = felt_xor(a.high, b.high, 128)
+func uint256_xor{range_check_ptr, bitwise_ptr : BitwiseBuiltin*}(a : Uint256, b : Uint256) -> (
+        res : Uint256):
+    let (low) = bitwise_xor(a.low, b.low)
+    let (high) = bitwise_xor(a.high, b.high)
     return (Uint256(low, high))
 end
 
 # Computes the bitwise AND of 2 uint256 integers.
-func uint256_and{range_check_ptr}(a : Uint256, b : Uint256) -> (res : Uint256):
-    alloc_locals
-    let (local low) = felt_and(a.low, b.low, 128)
-    let (high) = felt_and(a.high, b.high, 128)
+func uint256_and{range_check_ptr, bitwise_ptr : BitwiseBuiltin*}(a : Uint256, b : Uint256) -> (
+        res : Uint256):
+    let (low) = bitwise_and(a.low, b.low)
+    let (high) = bitwise_and(a.high, b.high)
     return (Uint256(low, high))
 end
 
 # Computes the bitwise OR of 2 uint256 integers.
-func uint256_or{range_check_ptr}(a : Uint256, b : Uint256) -> (res : Uint256):
-    let (a) = uint256_not(a)
-    let (b) = uint256_not(b)
-    let (res) = uint256_and(a, b)
-    return uint256_not(res)
+func uint256_or{range_check_ptr, bitwise_ptr : BitwiseBuiltin*}(a : Uint256, b : Uint256) -> (
+        res : Uint256):
+    let (low) = bitwise_or(a.low, b.low)
+    let (high) = bitwise_or(a.high, b.high)
+    return (Uint256(low, high))
 end
 
 # Computes 2**exp % 2**256 as a uint256 integer.

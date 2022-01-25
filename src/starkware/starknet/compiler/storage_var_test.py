@@ -27,9 +27,9 @@ func g{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
     let (x) = my_var.read()
     my_var.write(value=x + 1)
     local syscall_ptr : felt* = syscall_ptr
-    let (my_var2_addr) = my_var2.addr(1, 2)
-    my_var2.write(1, 2, value=B(A(3), 4))
-    let a = my_var2.read(1, 2)
+    let (my_var2_addr) = my_var2.addr(B(A(0), 1), 2)
+    my_var2.write(B(A(0), 1), 2, value=B(A(3), 4))
+    let a = my_var2.read(B(A(0), 1), 2)
     return ()
 end
 
@@ -40,13 +40,15 @@ func my_var() -> (res : felt):
 end
 
 @storage_var
-func my_var2(x, y) -> (res : B):
+func my_var2(x : B, y) -> (res : B):
 end
 """
     )
     addr = starknet_keccak(b"my_var")
     addr2 = starknet_keccak(b"my_var2")
     expected_result = f"""\
+%builtins range_check
+
 # Code for the dummy modules.
 ret
 ret
@@ -65,17 +67,20 @@ call rel ???                   # Call my_var.read.
 [ap] = [ap + (-4)] + 1; ap++   # Push value.
 call rel ???                   # Call my_var.write.
 [fp] = [ap + (-3)]             # Copy syscall_ptr to a local variable.
+[ap] = 0; ap++                 # Push 0.
 [ap] = 1; ap++                 # Push 1.
 [ap] = 2; ap++                 # Push 2.
 call rel ???                   # Call my_var2.addr.
 [ap] = [fp]; ap++              # Push syscall_ptr.
 [ap] = [ap + (-4)]; ap++       # Push pedersen_ptr.
 [ap] = [ap + (-4)]; ap++       # Push range_check_ptr.
+[ap] = 0; ap++                 # Push 0.
 [ap] = 1; ap++                 # Push 1.
 [ap] = 2; ap++                 # Push 2.
 [ap] = 3; ap++                 # Push 3.
 [ap] = 4; ap++                 # Push 4.
 call rel ???                   # Call my_var2.write.
+[ap] = 0; ap++                 # Push 0.
 [ap] = 1; ap++                 # Push 1.
 [ap] = 2; ap++                 # Push 2.
 call rel ???                   # Call my_var2.read.
@@ -116,13 +121,15 @@ call rel ???                   # Call storage_write().
 ret
 
 # Implementation of my_var2.addr.
-[ap] = [fp + (-6)]; ap++       # Push pedersen_ptr.
+[ap] = [fp + (-7)]; ap++       # Push pedersen_ptr.
 [ap] = {addr2}; ap++           # Push address.
-[ap] = [fp + (-4)]; ap++       # Push x.
-call rel ???                   # Call hash2(res, x).
+[ap] = [fp + (-5)]; ap++       # Push x.a.x.
+call rel ???                   # Call hash2(res, x.a.x).
+[ap] = [fp + (-4)]; ap++       # Push x.y.
+call rel ???                   # Call hash2(res, x.y).
 [ap] = [fp + (-3)]; ap++       # Push y.
 call rel ???                   # Call hash2(res, y).
-[ap] = [fp + (-5)]; ap++       # Push range_check_ptr.
+[ap] = [fp + (-6)]; ap++       # Push range_check_ptr.
 [ap] = [ap + (-2)]; ap++       # Push res.
 call rel ???                   # Call normalize_address(res).
 [ap] = [ap + (-6)]; ap++       # Return (updated) pedersen_ptr.
@@ -131,12 +138,13 @@ call rel ???                   # Call normalize_address(res).
 ret
 
 # Implementation of my_var2.read.
-[ap] = [fp + (-6)]; ap++       # Push pedersen_ptr .
-[ap] = [fp + (-5)]; ap++       # Push range_check_ptr.
-[ap] = [fp + (-4)]; ap++       # Push x.
+[ap] = [fp + (-7)]; ap++       # Push pedersen_ptr .
+[ap] = [fp + (-6)]; ap++       # Push range_check_ptr.
+[ap] = [fp + (-5)]; ap++       # Push x.a.x.
+[ap] = [fp + (-4)]; ap++       # Push x.y.
 [ap] = [fp + (-3)]; ap++       # Push y.
 call rel ???                   # Call my_var.addr().
-[ap] = [fp + (-7)]; ap++       # Push syscall_ptr.
+[ap] = [fp + (-8)]; ap++       # Push syscall_ptr.
 [ap] = [ap + (-2)]; ap++       # Push address.
 call rel ???                   # Call storage_read().
 [ap] = [ap + (-2)]; ap++       # Push (updated) syscall_ptr.
@@ -150,12 +158,13 @@ call rel ???                   # Call storage_read().
 ret
 
 # Implementation of my_var2.write.
-[ap] = [fp + (-8)]; ap++       # Push pedersen_ptr.
-[ap] = [fp + (-7)]; ap++       # Push range_check_ptr.
-[ap] = [fp + (-6)]; ap++       # Push x.
+[ap] = [fp + (-9)]; ap++       # Push pedersen_ptr.
+[ap] = [fp + (-8)]; ap++       # Push range_check_ptr.
+[ap] = [fp + (-7)]; ap++       # Push x.a.x.
+[ap] = [fp + (-6)]; ap++       # Push x.y.
 [ap] = [fp + (-5)]; ap++       # Push y.
 call rel ???                   # Call my_var.addr().
-[ap] = [fp + (-9)]; ap++       # Push syscall_ptr.
+[ap] = [fp + (-10)]; ap++      # Push syscall_ptr.
 [ap] = [ap + (-2)]; ap++       # Push address.
 [ap] = [fp + (-4)]; ap++       # Push value.
 call rel ???                   # Call storage_write().
@@ -167,7 +176,7 @@ call rel ???                   # Call storage_write().
 ret
 """
     assert (
-        re.sub("call rel -?[0-9]+", "call rel ???", program.format())
+        re.sub("call rel -?[0-9]+", "call rel ???", strip_comments_and_linebreaks(program.format()))
         == strip_comments_and_linebreaks(expected_result).lstrip()
     )
 
@@ -235,7 +244,7 @@ func f() -> (res : felt):
 end
 """,
         """
-file:?:?: Storage variables must have no decorators in addition to @storage_var.
+file:?:?: Unexpected decorator for a storage variable.
 @invalid_decorator
  ^***************^
 """,
@@ -248,9 +257,22 @@ func f(x, y : felt*) -> (res : felt):
 end
 """,
         """
-file:?:?: Only felt arguments are supported in storage variables.
+file:?:?: Arguments of storage variables must be a felts-only type (cannot contain pointers).
 func f(x, y : felt*) -> (res : felt):
               ^***^
+""",
+    )
+    verify_exception(
+        """
+%lang starknet
+@storage_var
+func f(addr : felt) -> (res : felt):
+end
+""",
+        f"""
+file:?:?: 'addr' cannot be used as a storage variable argument name.
+func f(addr : felt) -> (res : felt):
+       ^**^
 """,
     )
     verify_exception(
@@ -287,7 +309,7 @@ func f() -> (x : felt*):
 end
 """,
         """
-file:?:?: The return type of storage variables must consist of felts.
+file:?:?: The return type of storage variables must be a felts-only type (cannot contain pointers).
 func f() -> (x : felt*):
              ^*******^
 """,
