@@ -1,6 +1,7 @@
 from google.protobuf.any_pb2 import Any
 from google.protobuf.wrappers_pb2 import StringValue, Int32Value
 from typing import List
+import binascii
 
 from starkware.starknet.cli.starknet_cli import get_gateway_client, get_feeder_gateway_client
 from starkware.starkware_utils.error_handling import StarkErrorCode
@@ -8,25 +9,31 @@ from starkware.starkware_utils.error_handling import StarkErrorCode
 
 class InvokeParams:
     inputs: List[str] = []
-    signature: List[str] = []
-    abi: str = ""
     address: str = ""
     function: str = ""
+    code: str = ""
     block_hash: str = None
     block_number: int = None
-    type: str = "call"
     gateway_url: str = None
     feeder_gateway_url: str = None
+    network: str = "alpha-goerli"
+    network_id: str = None
     command: str = "invoke"
-    network: str = None
     testing = False
 
     def __init__(self, data: {}):
         for key in data:
-            if key == "inputs" or key == "signature":
-                self.__setattr__(key, data[key].split(","))
+            if key == "inputs":
+                if (len(data[key]) != 0):
+                    self.__setattr__(key, data[key].split(","))
+            elif key == "code":
+                if (len(data[key]) != 0):
+                    self.__setattr__(key, binascii.unhexlify(data[key].replace("0x", "") if data[key].startswith("0x") else data[key]))
             elif hasattr(self, key):
-                self.__setattr__(key, data[key])
+                if (key == "testing"):
+                    self.__setattr__(key, data[key])
+                elif (len(data[key]) != 0):
+                    self.__setattr__(key, data[key])
 
 
 class MockGateway:

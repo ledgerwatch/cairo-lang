@@ -1,4 +1,3 @@
-import binascii
 import grpc
 import sys
 import os
@@ -19,10 +18,8 @@ class CairoServicer(cairo_pb2_grpc.CAIROVMServicer):
 
         try:
             if method == "cairo_run":
-                code_hex = request.code.decode("utf-8")
-                code = binascii.unhexlify(code_hex)
-                result = call_cairo_run(params, code)
-            elif method == "starknet_run":
+                result = call_cairo_run(params, request.code)
+            elif method == "starknet_call":
                 result = asyncio.run(call_starknet_run(params))
             else:
                 result = ["Error. Unknown method: " + method]
