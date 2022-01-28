@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z\023./starknet;starknet',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0b\x63\x61iro.proto\x12\x08starknet\x1a\x19google/protobuf/any.proto\"\xa3\x01\n\x0b\x43\x61llRequest\x12\x0e\n\x06method\x18\x01 \x01(\t\x12\x31\n\x06params\x18\x02 \x03(\x0b\x32!.starknet.CallRequest.ParamsEntry\x12\x0c\n\x04\x63ode\x18\x03 \x01(\x0c\x1a\x43\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\"4\n\x0c\x43\x61llResponse\x12$\n\x06result\x18\x01 \x03(\x0b\x32\x14.google.protobuf.Any\"\x8a\x01\n\x0e\x41\x64\x64ressRequest\x12\x0c\n\x04salt\x18\x01 \x01(\t\x12\x34\n\x16\x63onstructor_definition\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\x12\x1c\n\x14\x63onstructor_calldata\x18\x03 \x03(\r\x12\x16\n\x0e\x63\x61ller_address\x18\x05 \x01(\t\"\"\n\x0f\x41\x64\x64ressResponse\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t2\x84\x01\n\x07\x43\x41IROVM\x12\x37\n\x04\x43\x61ll\x12\x15.starknet.CallRequest\x1a\x16.starknet.CallResponse\"\x00\x12@\n\x07\x41\x64\x64ress\x12\x18.starknet.AddressRequest\x1a\x19.starknet.AddressResponse\"\x00\x42\x15Z\x13./starknet;starknetb\x06proto3'
+  serialized_pb=b'\n\x0b\x63\x61iro.proto\x12\x08starknet\x1a\x19google/protobuf/any.proto\"\xa3\x01\n\x0b\x43\x61llRequest\x12\x0e\n\x06method\x18\x01 \x01(\t\x12\x31\n\x06params\x18\x02 \x03(\x0b\x32!.starknet.CallRequest.ParamsEntry\x12\x0c\n\x04\x63ode\x18\x03 \x01(\x0c\x1a\x43\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\"4\n\x0c\x43\x61llResponse\x12$\n\x06result\x18\x01 \x03(\x0b\x32\x14.google.protobuf.Any\"q\n\x0e\x41\x64\x64ressRequest\x12\x0c\n\x04salt\x18\x01 \x01(\t\x12\x1b\n\x13\x63ontract_definition\x18\x02 \x01(\t\x12\x1c\n\x14\x63onstructor_calldata\x18\x03 \x03(\r\x12\x16\n\x0e\x63\x61ller_address\x18\x04 \x01(\t\"\"\n\x0f\x41\x64\x64ressResponse\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t2\x84\x01\n\x07\x43\x41IROVM\x12\x37\n\x04\x43\x61ll\x12\x15.starknet.CallRequest\x1a\x16.starknet.CallResponse\"\x00\x12@\n\x07\x41\x64\x64ress\x12\x18.starknet.AddressRequest\x1a\x19.starknet.AddressResponse\"\x00\x42\x15Z\x13./starknet;starknetb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_any__pb2.DESCRIPTOR,])
 
@@ -159,9 +159,9 @@ _ADDRESSREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='constructor_definition', full_name='starknet.AddressRequest.constructor_definition', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      name='contract_definition', full_name='starknet.AddressRequest.contract_definition', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -174,7 +174,7 @@ _ADDRESSREQUEST = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='caller_address', full_name='starknet.AddressRequest.caller_address', index=3,
-      number=5, type=9, cpp_type=9, label=1,
+      number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -191,8 +191,8 @@ _ADDRESSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=273,
-  serialized_end=411,
+  serialized_start=272,
+  serialized_end=385,
 )
 
 
@@ -223,15 +223,14 @@ _ADDRESSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=413,
-  serialized_end=447,
+  serialized_start=387,
+  serialized_end=421,
 )
 
 _CALLREQUEST_PARAMSENTRY.fields_by_name['value'].message_type = google_dot_protobuf_dot_any__pb2._ANY
 _CALLREQUEST_PARAMSENTRY.containing_type = _CALLREQUEST
 _CALLREQUEST.fields_by_name['params'].message_type = _CALLREQUEST_PARAMSENTRY
 _CALLRESPONSE.fields_by_name['result'].message_type = google_dot_protobuf_dot_any__pb2._ANY
-_ADDRESSREQUEST.fields_by_name['constructor_definition'].message_type = google_dot_protobuf_dot_any__pb2._ANY
 DESCRIPTOR.message_types_by_name['CallRequest'] = _CALLREQUEST
 DESCRIPTOR.message_types_by_name['CallResponse'] = _CALLRESPONSE
 DESCRIPTOR.message_types_by_name['AddressRequest'] = _ADDRESSREQUEST
@@ -285,8 +284,8 @@ _CAIROVM = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=450,
-  serialized_end=582,
+  serialized_start=424,
+  serialized_end=556,
   methods=[
   _descriptor.MethodDescriptor(
     name='Call',
