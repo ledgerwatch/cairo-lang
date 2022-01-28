@@ -12,6 +12,7 @@ from starkware.starknet.cli.starknet_cli import handle_network_param
 from starkware.starknet.utils.api_utils import cast_to_felts
 
 
+
 def call_cairo_run(params: {}, code) -> []:
     proof_mode = False
     steps_input = None
